@@ -1,0 +1,40 @@
+#include "cots/lib/STD_TYPES.h"
+#include "cots/lib/BitMath.h"
+#include "cots/mcal/DIO/DIO_interface.h"
+#include "cots/hal/SevSegDig/SS_interface.h"
+#include "cots/hal/LCD/LCD_interface.h"
+#include "avr/delay.h"
+
+void main(){
+	Dio_SetPortDirection(Dio_PortA, 0xff);
+	SS_init();
+	u8 check = 0, a = 9;
+	Dio_SetPinValue(Dio_PortA, Dio_Pin0, Dio_High);
+	while (1){
+		SS_PrintNum(a);
+		if (check == 1 && a <= 5){
+			Dio_SetPinValue(Dio_PortA, Dio_Pin3, Dio_High);
+			_delay_ms(333);
+			Dio_SetPinValue(Dio_PortA, Dio_Pin3, Dio_Low);
+			_delay_ms(334);
+			Dio_SetPinValue(Dio_PortA, Dio_Pin3, Dio_High);
+			_delay_ms(333);
+		}
+		else _delay_ms(1000);
+		if (a == 0){
+			if (check == 1){
+				Dio_SetPinValue(Dio_PortA, Dio_Pin6, Dio_Low);
+				Dio_SetPinValue(Dio_PortA, Dio_Pin3, Dio_Low);
+				Dio_SetPinValue(Dio_PortA, Dio_Pin0, Dio_High);
+				check = 0;
+			}
+			else {
+				Dio_SetPinValue(Dio_PortA, Dio_Pin6, Dio_High);
+				Dio_SetPinValue(Dio_PortA, Dio_Pin0, Dio_Low);
+				check = 1;
+			}
+			a = 10;
+		}
+		a--;
+	}
+}
